@@ -1,0 +1,290 @@
+.dialog {
+  width: min(640px, calc(100vw - 32px));
+  max-height: min(84dvh, 760px);
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  background: var(--bg-elevated);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.dialog[open] {
+  display: flex;
+  flex-direction: column;
+  animation: open 0.25s var(--ease-out) both;
+}
+
+.dialog::backdrop {
+  background: rgba(3, 3, 8, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 8px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.count {
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: rgba(139, 92, 246, 0.18);
+  color: var(--violet-soft);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.tab[aria-selected="true"] {
+  border-bottom-color: var(--violet);
+  color: var(--text);
+}
+
+.body {
+  display: grid;
+  gap: 14px;
+  padding: 16px 20px 20px;
+  overflow-y: auto;
+}
+
+.exportRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.itemMain {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.itemActions {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.word {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.translation {
+  margin: 0;
+  color: #c4b5fd;
+}
+
+.context {
+  margin: 0;
+  color: var(--text-faint);
+  font-size: 0.82rem;
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  margin: 4px 0 0;
+  color: var(--text-faint);
+  font-size: 0.75rem;
+}
+
+.muted {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+}
+
+.empty {
+  margin: 8px 0;
+  color: var(--text-muted);
+}
+
+.success,
+.warn {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.success {
+  color: var(--success);
+}
+
+.warn {
+  color: var(--warning);
+}
+
+.iconButton {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.iconButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.primary,
+.secondary,
+.ghost,
+.danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.primary {
+  padding: 10px 18px;
+  border: 0;
+  background: var(--accent-gradient);
+  color: #fff;
+}
+
+.secondary {
+  padding: 8px 14px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--surface-strong);
+}
+
+.secondary:disabled {
+  opacity: 0.45;
+}
+
+.ghost {
+  padding: 6px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.ghost:hover {
+  color: var(--text);
+}
+
+.danger {
+  padding: 6px 10px;
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--danger);
+}
+
+.card {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 28px 16px;
+  text-align: center;
+}
+
+.progressText {
+  margin: 0;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.cardWord {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.cardTranslation {
+  margin: 0;
+  color: #c4b5fd;
+  font-size: 1.2rem;
+}
+
+.cardActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.done {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 24px;
+  color: var(--success);
+}
+
+.done p {
+  margin: 0;
+  color: var(--text);
+}
+
+@keyframes open {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

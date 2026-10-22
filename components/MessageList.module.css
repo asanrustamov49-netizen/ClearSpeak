@@ -1,0 +1,258 @@
+.scroller {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px clamp(16px, 3vw, 28px) 12px;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  animation: appear 0.35s var(--ease-out) both;
+}
+
+.assistantRow {
+  align-items: flex-start;
+}
+
+.userRow {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.assistantBubble,
+.userBubble {
+  max-width: min(78%, 620px);
+  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+}
+
+.assistantBubble {
+  border: 1px solid var(--border);
+  border-top-left-radius: 6px;
+  background: var(--surface-strong);
+}
+
+.userBubble {
+  border-bottom-right-radius: 6px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.85), rgba(79, 70, 229, 0.85));
+  color: #fff;
+}
+
+.text {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-faint);
+  font-size: 0.78rem;
+}
+
+.statusOk {
+  color: var(--success);
+}
+
+.statusFix {
+  color: var(--warning);
+  text-decoration: none;
+}
+
+.statusFix:hover {
+  text-decoration: underline;
+}
+
+.statusError {
+  color: var(--danger);
+}
+
+.typing {
+  display: inline-flex;
+  gap: 5px;
+  padding: 16px 18px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--violet-soft);
+  animation: bounce 1.2s ease-in-out infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.empty {
+  margin: 40px 0;
+  color: var(--text-faint);
+  text-align: center;
+}
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: var(--radius-md);
+  background: var(--danger-bg);
+  animation: appear 0.3s var(--ease-out) both;
+}
+
+.errorIcon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--danger);
+}
+
+.errorBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.errorTitle {
+  margin: 0;
+  font-weight: 600;
+}
+
+.errorText {
+  margin: 2px 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.retry {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  border-radius: 999px;
+  background: transparent;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.retry:hover {
+  background: rgba(248, 113, 113, 0.14);
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
+
+@media (max-width: 640px) {
+  .assistantBubble,
+  .userBubble {
+    max-width: 88%;
+  }
+
+  .avatar {
+    display: none;
+  }
+
+  .error {
+    flex-wrap: wrap;
+  }
+
+  .retry {
+    margin-left: 32px;
+  }
+}
+
+.typing {
+  align-items: center;
+}
+
+.typingLabel {
+  margin-left: 6px;
+  color: var(--text-faint);
+  font-size: 0.8rem;
+}
+
+.streaming {
+  animation: appear 0.25s var(--ease-out) both;
+}
+
+.caret {
+  display: inline-block;
+  width: 7px;
+  height: 1.05em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  border-radius: 2px;
+  background: var(--violet-soft);
+  animation: blink 1s steps(2, start) infinite;
+}
+
+.streamingNote {
+  margin: 8px 0 0;
+  color: var(--text-faint);
+  font-size: 0.75rem;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
