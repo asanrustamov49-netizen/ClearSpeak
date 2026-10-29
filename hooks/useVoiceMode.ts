@@ -1,23 +1,15 @@
 "use client";
-
 import { useCallback, useEffect, useRef, useState } from "react";
-
 import { useSpeechRecognition, type SpeechRecognitionControls } from "./useSpeechRecognition";
 
-/** Pause after the learner stops speaking before the message is sent automatically. */
 export const VOICE_SEND_DELAY_MS = 1500;
-/** Gap between the end of AI playback and re-opening the microphone. */
 const RESUME_DELAY_MS = 400;
 
 export type VoicePhase =
-  /** Waiting for the learner to tap the mic. */
   | "idle"
   | "listening"
-  /** Speech recognised, short pause before auto-send. */
   | "countdown"
-  /** Message sent, waiting for the AI. */
   | "waiting"
-  /** AI reply is being played. */
   | "speaking";
 
 export interface VoiceMode {
@@ -27,20 +19,16 @@ export interface VoiceMode {
   recognition: SpeechRecognitionControls;
   enable: () => void;
   disable: () => void;
-  /** Starts listening (stops any playback first via the callback). */
   listen: () => void;
   stopListening: () => void;
   cancelSend: () => void;
   sendNow: () => void;
-  /** Call when an AI reply starts playing in voice mode. */
   markSpeaking: () => void;
-  /** Call when that playback ended or failed: re-opens the microphone once. */
   resumeAfterReply: () => void;
 }
 
 interface Options {
   send: (text: string) => boolean;
-  /** Stops any AI audio so the microphone never records it. */
   stopPlayback: () => void;
 }
 
@@ -80,7 +68,6 @@ export function useVoiceMode({ send, stopPlayback }: Options): VoiceMode {
       setText("");
       setPhase("waiting");
     } else {
-      // Another request is in flight; keep the text and let the learner retry.
       setPhase("idle");
     }
   }, []);
@@ -97,7 +84,6 @@ export function useVoiceMode({ send, stopPlayback }: Options): VoiceMode {
         clearTimer();
         timerRef.current = setTimeout(sendNow, VOICE_SEND_DELAY_MS);
       } else {
-        // Nothing heard or an error: stop here instead of re-listening in a loop.
         setPhase("idle");
       }
     },

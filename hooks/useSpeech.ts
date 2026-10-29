@@ -1,7 +1,5 @@
 "use client";
-
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-
 import { ChatApiError, fetchTtsAudio, fetchTtsStatus } from "@/lib/api";
 import { MAX_TTS_CHARS } from "@/lib/constants";
 import type { TtsProvider } from "@/lib/types";
@@ -11,8 +9,6 @@ export interface VoiceOption {
   name: string;
   lang: string;
 }
-
-// ---- Browser voices (speechSynthesis) as an external store ----
 
 const EMPTY_VOICES: VoiceOption[] = [];
 let cachedVoices: VoiceOption[] = EMPTY_VOICES;
@@ -29,7 +25,6 @@ function readVoices(): VoiceOption[] {
     .filter((voice) => voice.lang.toLowerCase().startsWith("en"))
     .map((voice) => ({ uri: voice.voiceURI, name: voice.name, lang: voice.lang }));
   const key = english.map((voice) => voice.uri).join("|");
-  // useSyncExternalStore requires a stable snapshot reference between calls.
   if (key !== cachedKey) {
     cachedKey = key;
     cachedVoices = english;
@@ -53,8 +48,6 @@ function pickDefaultVoice(voices: readonly VoiceOption[]): string {
   return preferred?.uri ?? "";
 }
 
-// ---- Cartesia audio cache (object URLs of real audio returned by our /api/tts) ----
-
 const AUDIO_CACHE_LIMIT = 40;
 const audioCache = new Map<string, string>();
 
@@ -72,33 +65,25 @@ function cacheAudio(text: string, url: string): void {
 export interface Playback {
   id: string;
   status: "loading" | "playing";
-  /** Which engine actually produces this audio. */
   engine: TtsProvider;
   rate: number;
 }
 
 export interface PlayOptions {
-  /** Overrides the global speed for this playback only (e.g. 🐢 0.7×). */
   rate?: number;
-  /** Called when playback finished or failed — not when it was stopped by the user. */
   onDone?: (result: "ended" | "error") => void;
 }
 
 export interface SpeechControls {
-  /** null while detecting. */
   provider: TtsProvider | null;
-  /** Name of the server voice engine (e.g. "ElevenLabs через OmniRoute"). */
   providerLabel: string | null;
-  /** Label for a playback engine, for honest UI captions. */
   engineLabel: (engine: TtsProvider) => string;
-  /** null until hydrated. */
   browserSupported: boolean | null;
   voices: VoiceOption[];
   voiceUri: string;
   setVoiceUri: (uri: string) => void;
   playback: Playback | null;
   error: string | null;
-  /** Shown when Cartesia failed and the browser voice was used instead. */
   notice: string | null;
   play: (id: string, text: string, options?: PlayOptions) => void;
   stop: () => void;
@@ -113,12 +98,9 @@ export function useSpeech(globalRate: number): SpeechControls {
   const [playback, setPlayback] = useState<Playback | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const fetchRef = useRef<AbortController | null>(null);
-  // Chrome may garbage-collect an unreferenced utterance and never fire `end`.
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  /** Increments on every play/stop so stale callbacks can be ignored. */
   const tokenRef = useRef(0);
 
   const voiceUri = voices.some((voice) => voice.uri === chosenUri) ? chosenUri : pickDefaultVoice(voices);
@@ -173,7 +155,6 @@ export function useSpeech(globalRate: number): SpeechControls {
       const voice = synth.getVoices().find((item) => item.voiceURI === voiceUri);
       if (voice) utterance.voice = voice;
       utterance.lang = voice?.lang ?? "en-US";
-      // SpeechSynthesisUtterance.rate is the supported way to change browser speech speed.
       utterance.rate = rate;
 
       utterance.onstart = () => {
@@ -208,7 +189,6 @@ export function useSpeech(globalRate: number): SpeechControls {
 
   const playAudioUrl = useCallback(
     async (token: number, id: string, url: string, rate: number, onDone?: PlayOptions["onDone"]) => {
-      // A fresh element per playback: no stale handlers from a previous clip (stop() pauses the old one).
       const audio = new Audio();
       audio.onended = () => {
         if (tokenRef.current !== token) return;
@@ -222,7 +202,6 @@ export function useSpeech(globalRate: number): SpeechControls {
         onDone?.("error");
       };
       audio.src = url;
-      // Real playback-speed change of the generated audio; pitch is preserved by default in modern browsers.
       audio.preservesPitch = true;
       audio.defaultPlaybackRate = rate;
       audio.playbackRate = rate;
@@ -279,7 +258,6 @@ export function useSpeech(globalRate: number): SpeechControls {
         .catch((fetchError: unknown) => {
           if (tokenRef.current !== token || controller.signal.aborted) return;
           const reason = fetchError instanceof ChatApiError ? fetchError.message : "Серверное озвучивание недоступно.";
-          // Honest fallback: the UI labels this as the browser voice, not Cartesia.
           setNotice(`${reason} Ответ озвучен голосом браузера.`);
           speakWithBrowser(token, id, text, rate, options.onDone);
         })

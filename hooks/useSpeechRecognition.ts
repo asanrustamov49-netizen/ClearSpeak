@@ -1,14 +1,10 @@
 "use client";
-
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 export type RecognitionSupport =
-  /** Not known yet (server render / before hydration). */
   | "unknown"
   | "supported"
-  /** Browser has no SpeechRecognition implementation. */
   | "unsupported"
-  /** API exists but the page is not a secure context, so the microphone is blocked. */
   | "insecure";
 
 function getRecognitionConstructor(): SpeechRecognitionConstructor | null {
@@ -39,26 +35,21 @@ const ERROR_MESSAGES: Record<SpeechRecognitionErrorCode, string | null> = {
   "bad-grammar": "Ошибка распознавания речи. Попробуйте ещё раз.",
 };
 
-/** Only one recognition session can use the microphone at a time across the whole page. */
 let activeRecognition: SpeechRecognition | null = null;
 
 interface Options {
   lang?: string;
-  /** Called with the final transcript of one utterance. */
   onFinalTranscript: (text: string) => void;
-  /** Called when the recognition session ends (after silence, stop() or an error). */
   onEnd?: (info: { heardSpeech: boolean; error: SpeechRecognitionErrorCode | null }) => void;
 }
 
 export interface SpeechRecognitionControls {
   support: RecognitionSupport;
   listening: boolean;
-  /** Not-yet-final text while the user speaks. */
   interim: string;
   error: string | null;
   start: () => void;
   stop: () => void;
-  /** Stops immediately and discards pending results. */
   abort: () => void;
   clearError: () => void;
 }
@@ -93,7 +84,6 @@ export function useSpeechRecognition({ lang = "en-US", onFinalTranscript, onEnd 
     const Ctor = getRecognitionConstructor();
     if (!Ctor || !window.isSecureContext || recognitionRef.current) return;
 
-    // Release the microphone from any other component first.
     activeRecognition?.abort();
 
     const recognition = new Ctor();
