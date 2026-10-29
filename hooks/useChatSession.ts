@@ -1,7 +1,5 @@
 "use client";
-
 import { useCallback, useEffect, useReducer, useRef } from "react";
-
 import { ChatApiError, postChatStream, postSummary } from "@/lib/api";
 import { getScenario, MAX_HISTORY_MESSAGES, MAX_KNOWN_WORDS, MAX_USER_MESSAGE_CHARS } from "@/lib/constants";
 import type {
@@ -21,11 +19,8 @@ export interface UiMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
-  /** Set on user messages once the model has reviewed them (empty array = no mistakes). */
   corrections?: Correction[];
-  /** Assistant messages: words introduced for the first time in this session by this reply. */
   vocabulary?: VocabularyItem[];
-  /** Assistant messages: suggested learner replies. */
   hints?: ReplyHint[];
 }
 
@@ -42,7 +37,6 @@ export interface SummaryState {
   error: string | null;
 }
 
-/** Generated image the session is about. `url` is an object URL owned by the caller. */
 export interface SessionImage {
   url: string;
   context: ImageContext;
@@ -54,11 +48,9 @@ export interface SessionState {
   level: LevelId;
   topic: TopicId;
   messages: UiMessage[];
-  /** All words introduced in this session, in order (no duplicates). */
   vocabulary: VocabularyItem[];
   goalAchieved: boolean;
   pending: Pending;
-  /** Provisional AI reply text while it streams in (display only). */
   streamingText: string | null;
   error: SessionError | null;
   summary: SummaryState;
@@ -97,7 +89,6 @@ const initialState: SessionState = {
   image: null,
 };
 
-/** A failed, unanswered user message is replaced instead of piling up duplicates. */
 function withoutUnansweredUser(messages: UiMessage[]): UiMessage[] {
   const last = messages[messages.length - 1];
   return last && last.role === "user" && !last.corrections ? messages.slice(0, -1) : messages;
@@ -127,7 +118,6 @@ function reducer(state: SessionState, action: Action): SessionState {
         messages: [...withoutUnansweredUser(state.messages), action.message],
         pending: "send",
         error: null,
-        // The dialogue changes, so an earlier summary no longer reflects it.
         summary: IDLE_SUMMARY,
       };
     case "retryRequested":
@@ -171,7 +161,6 @@ function reducer(state: SessionState, action: Action): SessionState {
     case "backToChat":
       return state.phase === "summary" ? { ...state, phase: "chat" } : state;
     case "reset":
-      // Hidden scenarios (image talk) are not selectable in setup, so fall back to the default one.
       return { ...initialState, level: state.level, topic: getScenario(state.topic).hidden ? initialState.topic : state.topic };
   }
 }
@@ -187,13 +176,10 @@ function errorMessage(error: unknown): string {
 
 export interface ChatSession {
   state: SessionState;
-  /** Number of learner messages the model has answered. */
   turns: number;
   setLevel: (level: LevelId) => void;
   setTopic: (topic: TopicId) => void;
-  /** Starts a session; with `image` it becomes a conversation about that image. */
   start: (image?: SessionImage) => void;
-  /** Returns true when the message was accepted for sending. */
   send: (text: string) => boolean;
   retry: () => void;
   finish: () => void;
@@ -203,13 +189,9 @@ export interface ChatSession {
 }
 
 interface Options {
-  /** Called once for every new assistant message (e.g. to read it aloud). */
   onAssistantMessage?: (id: string, text: string) => void;
-  /** Called when a learner message got an answer (a real practice turn). */
   onTurnAnswered?: () => void;
-  /** Called when the summary arrives. */
   onSummary?: (summary: SessionSummary, state: SessionState) => void;
-  /** Saved dictionary words the model should not present as new. */
   savedWords?: readonly string[];
 }
 
@@ -283,7 +265,6 @@ export function useChatSession({ onAssistantMessage, onTurnAnswered, onSummary, 
       const content = text.trim();
       if (busyRef.current || state.phase !== "chat" || !content) return false;
       if (content.length > MAX_USER_MESSAGE_CHARS) return false;
-      // Can't reply before the opening line exists.
       if (!state.messages.some((message) => message.role === "assistant")) return false;
 
       const message: UiMessage = { id: crypto.randomUUID(), role: "user", content };
@@ -305,7 +286,6 @@ export function useChatSession({ onAssistantMessage, onTurnAnswered, onSummary, 
     summaryControllerRef.current?.abort();
     const controller = new AbortController();
     summaryControllerRef.current = controller;
-    // Only answered turns: an unanswered/failed message is not part of the finished dialogue.
     const answered = withoutUnansweredUser(state.messages);
     const snapshot = state;
     dispatch({ type: "summaryRequested" });
@@ -327,7 +307,6 @@ export function useChatSession({ onAssistantMessage, onTurnAnswered, onSummary, 
   const finish = useCallback(() => {
     if (busyRef.current || state.phase !== "chat") return;
     if (!state.messages.some((message) => message.role === "user" && message.corrections)) return;
-    // Re-use a finished summary if nothing changed since.
     if (state.summary.status === "ready") {
       dispatch({ type: "summaryRequested" });
       dispatch({ type: "summaryReceived", summary: state.summary.data as SessionSummary });

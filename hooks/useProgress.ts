@@ -1,7 +1,5 @@
 "use client";
-
 import { useSyncExternalStore } from "react";
-
 import {
   addSession,
   addWord,
@@ -16,15 +14,10 @@ import {
   type SessionRecord,
 } from "@/lib/progress";
 
-/**
- * Learning progress persisted in localStorage. Contains only learning data and UI preferences —
- * never API keys or other secrets.
- */
 const STORAGE_KEY = "speakup.progress.v1";
 
 export interface ProgressState {
   data: ProgressData;
-  /** Set when localStorage is unavailable or full; progress then lives only in memory. */
   storageError: string | null;
 }
 
@@ -91,7 +84,6 @@ export const progressActions = {
   setAutoSpeak(autoSpeak: boolean) {
     update((data) => (data.autoSpeak === autoSpeak ? data : { ...data, autoSpeak }));
   },
-  /** Returns true if the word was added (false if it was already saved). */
   saveWord(input: NewWordInput): boolean {
     let added = false;
     update((data) => {
@@ -115,7 +107,6 @@ export const progressActions = {
   },
 };
 
-/** null until hydrated on the client (server render has no access to localStorage). */
 export function useProgress(): ProgressState | null {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
