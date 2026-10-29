@@ -1,5 +1,4 @@
 "use client";
-
 import { BookmarkIcon, SpeakerIcon } from "./icons";
 import styles from "./WordChips.module.css";
 import type { PlaybackTools, WordTools } from "./wordTools";
@@ -14,7 +13,6 @@ interface Props {
   audio: PlaybackTools;
 }
 
-/** New words introduced by one AI reply, shown right above it. */
 export function WordChips({ messageId, items, context, topic, words, audio }: Props) {
   if (items.length === 0) {
     return <p className={styles.empty}>Новых слов в этом ответе нет</p>;
