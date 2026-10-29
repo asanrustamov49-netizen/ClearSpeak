@@ -63,7 +63,6 @@ async function throwForResponse(response: Response): Promise<never> {
   throw new ChatApiError(parsed?.code ?? "internal", parsed?.message ?? `Сервер вернул ошибку ${response.status}.`);
 }
 
-/** POSTs JSON to one of our own routes and validates the response. Never talks to OmniRoute directly. */
 async function postJson<T>(url: string, body: unknown, parse: (value: unknown) => T | null, signal?: AbortSignal): Promise<T> {
   const response = await send(url, body, signal);
   if (!response.ok) return throwForResponse(response);
@@ -91,10 +90,6 @@ function parseStreamEvent(line: string): ChatStreamEvent | null {
   return null;
 }
 
-/**
- * Streams /api/chat (NDJSON). `onDelta` receives the provisional reply text; the returned promise resolves with the
- * validated final reply. Partial text is display-only and is replaced by the validated reply.
- */
 export async function postChatStream(
   body: ChatRequestBody,
   signal: AbortSignal,
@@ -144,12 +139,10 @@ export async function fetchImageStatus(): Promise<ImageStatus> {
     const value: unknown = await response.json();
     if (response.ok && isRecord(value)) return { generation: value.generation === true, vision: value.vision === true };
   } catch {
-    // Treat as unavailable; the rest of the app keeps working.
   }
   return { generation: false, vision: false };
 }
 
-/** Generates an image via our server; resolves with a validated image Blob. */
 export async function postGenerateImage(topic: string, signal: AbortSignal): Promise<Blob> {
   const response = await send("/api/image", { topic }, signal);
   if (!response.ok) return throwForResponse(response);
@@ -167,7 +160,6 @@ async function blobToBase64(blob: Blob): Promise<string> {
   return btoa(binary);
 }
 
-/** Sends the image once to the vision model and returns the context used for the whole conversation. */
 export async function postDescribeImage(topic: string, image: Blob, signal: AbortSignal): Promise<ImageContext> {
   const imageBase64 = await blobToBase64(image);
   const result = await postJson("/api/image/describe", { topic, imageBase64 }, parseImageDescription, signal);
@@ -200,12 +192,10 @@ export async function fetchTtsStatus(): Promise<TtsStatus> {
       return { provider: payload.provider, label: payload.label.slice(0, 60) };
     }
   } catch {
-    // Treat as "no server TTS"; browser speech remains available.
   }
   return { provider: "browser", label: "Голос браузера" };
 }
 
-/** Requests Cartesia audio through our server route. */
 export async function fetchTtsAudio(text: string, signal?: AbortSignal): Promise<Blob> {
   const response = await send("/api/tts", { text }, signal);
   if (!response.ok) return throwForResponse(response);

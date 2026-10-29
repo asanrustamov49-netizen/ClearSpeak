@@ -1,14 +1,6 @@
 import "server-only";
-
 import { UpstreamError } from "./http";
 
-/**
- * Cartesia TTS "bytes" endpoint, per https://docs.cartesia.ai/api-reference/tts/bytes :
- *   POST {base}/tts/bytes
- *   Authorization: Bearer <api key>, Cartesia-Version: 2026-08-14
- *   body: { model_id, transcript, voice: { id }, output_format, language }
- *   200 → binary audio
- */
 const CARTESIA_VERSION = "2026-08-14";
 const DEFAULT_BASE_URL = "https://api.cartesia.ai";
 const DEFAULT_MODEL_ID = "sonic-3";
@@ -78,7 +70,6 @@ async function cartesiaFetch(url: string, init: RequestInit, signal: AbortSignal
 
 let cachedDefaultVoice: string | null = null;
 
-/** When CARTESIA_VOICE_ID is not set, picks the first English voice from GET /voices once per server process. */
 async function resolveVoiceId(config: CartesiaConfig, signal: AbortSignal): Promise<string> {
   if (config.voiceId) return config.voiceId;
   if (cachedDefaultVoice) return cachedDefaultVoice;
@@ -108,7 +99,6 @@ export interface SynthesizedAudio {
   contentType: string;
 }
 
-/** Generates English speech with Cartesia. Throws UpstreamError with a safe message on failure. */
 export async function synthesizeSpeech(text: string, signal: AbortSignal): Promise<SynthesizedAudio> {
   const config = readConfig();
   if (!config) throw new UpstreamError("not_configured", 503, "Cartesia не настроена: задайте CARTESIA_API_KEY.");

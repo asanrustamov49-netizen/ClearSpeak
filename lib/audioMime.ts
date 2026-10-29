@@ -1,6 +1,5 @@
 export type AudioMime = "audio/mpeg" | "audio/wav" | "audio/ogg";
 
-/** Detects audio type from magic bytes so only real audio is passed to the browser. */
 export function detectAudioMime(bytes: Uint8Array): AudioMime | null {
   const b = bytes;
   if (b.length >= 3 && b[0] === 0x49 && b[1] === 0x44 && b[2] === 0x33) return "audio/mpeg"; // "ID3" tag
