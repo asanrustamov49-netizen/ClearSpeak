@@ -1,7 +1,5 @@
 "use client";
-
 import { useEffect, useRef } from "react";
-
 import { AssistantMessage } from "./AssistantMessage";
 import { AlertIcon, CheckIcon, RefreshIcon } from "./icons";
 import styles from "./MessageList.module.css";
@@ -12,7 +10,6 @@ import type { TopicId } from "@/lib/types";
 interface Props {
   messages: UiMessage[];
   pending: "start" | "send" | null;
-  /** Provisional AI reply text while it streams in. */
   streamingText: string | null;
   error: SessionError | null;
   onRetry: () => void;
@@ -89,7 +86,6 @@ export function MessageList({ messages, pending, streamingText, error, onRetry, 
               AI
             </span>
             {streamingText ? (
-              // Provisional streamed text; replaced by the validated reply (with words and controls) when complete.
               <div className={`${styles.assistantBubble} ${styles.streaming}`} aria-busy="true">
                 <p className={styles.text} lang="en">
                   {streamingText}

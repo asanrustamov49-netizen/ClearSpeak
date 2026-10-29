@@ -1,11 +1,8 @@
 "use client";
-
 import { useState } from "react";
-
 import styles from "./ImageContextCard.module.css";
 import type { SessionImage } from "@/hooks/useChatSession";
 
-/** The image under discussion, pinned above the chat. */
 export function ImageContextCard({ image }: { image: SessionImage }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -18,8 +15,6 @@ export function ImageContextCard({ image }: { image: SessionImage }) {
         aria-expanded={expanded}
         aria-label={expanded ? "Уменьшить изображение" : "Увеличить изображение"}
       >
-        {/* Object URL of the validated generated image. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={image.url} alt={`Обсуждаемое изображение: ${image.context.topic}`} className={styles.image} />
       </button>
       <div className={styles.meta}>

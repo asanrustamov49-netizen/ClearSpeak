@@ -1,7 +1,5 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
-
 import { AlertIcon, ArrowRightIcon, CloseIcon, ImageIcon, RefreshIcon } from "./icons";
 import styles from "./ImageStudio.module.css";
 import type { SessionImage } from "@/hooks/useChatSession";
@@ -23,7 +21,6 @@ interface Props {
   onClose: () => void;
   level: LevelId;
   status: ImageStatus | null;
-  /** Receives ownership of the image object URL. */
   onStart: (image: SessionImage) => void;
 }
 
@@ -61,7 +58,6 @@ export function ImageStudio({ open, onClose, level, status, onStart }: Props) {
     return () => clearInterval(timer);
   }, [phase]);
 
-  // Release the request and any image the session did not take over.
   useEffect(
     () => () => {
       controllerRef.current?.abort();
@@ -228,8 +224,6 @@ export function ImageStudio({ open, onClose, level, status, onStart }: Props) {
 
               {phase.kind !== "generating" && image && (
                 <figure className={styles.figure}>
-                  {/* Object URL of image bytes returned by our API (validated by magic bytes). */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={image.url} alt={`Сгенерированное изображение: ${image.topic}`} className={styles.image} />
                   <figcaption className={styles.caption}>{image.topic}</figcaption>
                 </figure>
