@@ -1,5 +1,4 @@
 import { connection } from "next/server";
-
 import { isCartesiaConfigured, synthesizeSpeech } from "@/lib/cartesia";
 import { MAX_TTS_CHARS } from "@/lib/constants";
 import { errorResponse, handleRouteError, jsonResponse, readJsonBody } from "@/lib/http";
@@ -7,7 +6,6 @@ import { getOmniRouteTtsLabel, synthesizeSpeechViaOmniRoute } from "@/lib/omniro
 import type { TtsStatus } from "@/lib/types";
 import { isRecord } from "@/lib/validation";
 
-/** Active server TTS: Cartesia (direct) first, then OmniRoute /audio/speech, otherwise the browser voice. */
 function activeProvider(): TtsStatus {
   if (isCartesiaConfigured()) return { provider: "cartesia", label: "Cartesia" };
   const omni = getOmniRouteTtsLabel();
@@ -15,9 +13,7 @@ function activeProvider(): TtsStatus {
   return { provider: "browser", label: "Голос браузера" };
 }
 
-/** Tells the client which TTS engine is active. Never exposes keys, voice ids or model names. */
 export async function GET(): Promise<Response> {
-  // Read env at request time, not at build time.
   await connection();
   return jsonResponse(activeProvider());
 }

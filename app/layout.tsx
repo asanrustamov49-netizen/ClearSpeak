@@ -20,9 +20,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: "#05050a",
   colorScheme: "dark",
-  // Lets fixed bottom bars use env(safe-area-inset-bottom) on notched phones.
   viewportFit: "cover",
-  // The on-screen keyboard shrinks the layout (and 100dvh), so the chat composer stays visible.
   interactiveWidget: "resizes-content",
 };
 
