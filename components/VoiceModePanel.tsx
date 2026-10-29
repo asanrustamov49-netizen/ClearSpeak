@@ -1,5 +1,4 @@
 "use client";
-
 import { MicIcon, StopIcon } from "./icons";
 import styles from "./VoiceModePanel.module.css";
 import type { Playback } from "@/hooks/useSpeech";
@@ -8,9 +7,7 @@ import { VOICE_SEND_DELAY_MS } from "@/hooks/useVoiceMode";
 
 interface Props {
   voice: VoiceMode;
-  /** A chat request is in flight. */
   busy: boolean;
-  /** The opening line is not there yet. */
   disabled: boolean;
   playback: Playback | null;
   onStopPlayback: () => void;
@@ -25,7 +22,6 @@ const LABELS = {
 } as const;
 
 export function VoiceModePanel({ voice, busy, disabled, playback, onStopPlayback }: Props) {
-  // Derive the visible phase from real state so the UI never gets stuck.
   let phase = voice.phase;
   if (phase === "waiting" && !busy) phase = "idle";
   if (phase === "speaking" && !playback) phase = "idle";

@@ -1,5 +1,4 @@
 "use client";
-
 import { StopIcon } from "./icons";
 import styles from "./VoiceSettings.module.css";
 import type { SpeechControls } from "@/hooks/useSpeech";
