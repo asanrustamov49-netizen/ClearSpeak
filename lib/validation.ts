@@ -54,7 +54,6 @@ function readString(value: unknown): string | null {
   return trimmed ? trimmed : null;
 }
 
-/** Lowercases and collapses whitespace/punctuation so text can be compared loosely. */
 export function normalizeForMatch(text: string): string {
   return text
     .toLowerCase()
@@ -101,7 +100,6 @@ function parseKnownWords(raw: unknown): ParseResult<string[]> {
   return { ok: true, value: words };
 }
 
-/** Image topic typed or picked by the learner: short plain text, no markup or control characters. */
 export function parseImageTopic(raw: unknown): ParseResult<string> {
   const topic = typeof raw === "string" ? raw.replace(/\s+/g, " ").trim() : "";
   if (topic.length < 3) return { ok: false, message: "Опишите тему изображения хотя бы в нескольких словах." };
@@ -123,7 +121,6 @@ function parseImageContextField(raw: unknown): ParseResult<ImageContext | undefi
   return { ok: true, value: { topic: topic.value, description, keyItems } };
 }
 
-/** Validates the body of a POST /api/chat request. */
 export function parseChatRequest(input: unknown): ParseResult<ChatRequestBody> {
   if (!isRecord(input)) return { ok: false, message: "Тело запроса должно быть JSON-объектом." };
   if (!isLevel(input.level)) return { ok: false, message: "Неизвестный уровень." };
@@ -147,7 +144,6 @@ export function parseChatRequest(input: unknown): ParseResult<ChatRequestBody> {
   };
 }
 
-/** Vision-model output: factual description of the generated image. */
 export function parseImageDescription(input: unknown): { description: string; keyItems: string[] } | null {
   if (!isRecord(input)) return null;
   const description = readString(input.description);
@@ -158,7 +154,6 @@ export function parseImageDescription(input: unknown): { description: string; ke
   return { description: description.slice(0, MAX_IMAGE_DESCRIPTION_CHARS), keyItems };
 }
 
-/** Validates POST /api/hints. The last message must be the AI's line the learner needs to answer. */
 export function parseHintsRequest(input: unknown): ParseResult<HintsRequestBody> {
   if (!isRecord(input)) return { ok: false, message: "Тело запроса должно быть JSON-объектом." };
   if (!isLevel(input.level)) return { ok: false, message: "Неизвестный уровень." };
@@ -171,7 +166,6 @@ export function parseHintsRequest(input: unknown): ParseResult<HintsRequestBody>
   return { ok: true, value: { level: input.level, topic: input.topic, messages: history.value } };
 }
 
-/** Validates POST /api/summary. Requires at least one learner message. */
 export function parseSummaryRequest(input: unknown): ParseResult<SummaryRequestBody> {
   if (!isRecord(input)) return { ok: false, message: "Тело запроса должно быть JSON-объектом." };
   if (!isLevel(input.level)) return { ok: false, message: "Неизвестный уровень." };
@@ -184,7 +178,6 @@ export function parseSummaryRequest(input: unknown): ParseResult<SummaryRequestB
   return { ok: true, value: { level: input.level, topic: input.topic, messages: history.value } };
 }
 
-/** Validates POST /api/translate. */
 export function parseTranslateRequest(input: unknown): ParseResult<TranslateRequestBody> {
   if (!isRecord(input)) return { ok: false, message: "Тело запроса должно быть JSON-объектом." };
   if (!isLevel(input.level)) return { ok: false, message: "Неизвестный уровень." };
@@ -200,7 +193,6 @@ function parseCorrection(raw: unknown): Correction | null {
   const corrected = readString(raw.corrected);
   const explanation = readString(raw.explanation);
   if (!original || !corrected || !explanation) return null;
-  // A "correction" that changes nothing is not a correction.
   if (original === corrected) return null;
   return { original, corrected, explanation };
 }
@@ -232,11 +224,6 @@ function dedupeBy<T>(items: T[], key: (item: T) => string): T[] {
   });
 }
 
-/**
- * Validates the structured chat object produced by the model.
- * Returns null when the required shape is wrong. Malformed individual items are dropped, never invented.
- * Vocabulary words must actually occur in the reply text.
- */
 export function parseCoachReply(input: unknown, options: { isOpening: boolean }): CoachReply | null {
   if (!isRecord(input)) return null;
   const reply = readString(input.reply);
@@ -290,10 +277,6 @@ export function parseTranslationResult(input: unknown, phrase: string): Translat
 
 const GOAL_STATUSES: readonly GoalStatus[] = ["completed", "partial", "not_completed", "not_applicable"];
 
-/**
- * Validates the session summary against the actual dialogue:
- * error examples must be fragments the learner really wrote, words must really occur in the session.
- */
 export function parseSessionSummary(
   input: unknown,
   context: { messages: ChatTurn[]; hasGoal: boolean },
