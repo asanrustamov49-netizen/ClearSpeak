@@ -83,7 +83,6 @@ function objectSchema<P extends Record<string, unknown>>(properties: P) {
 
 const HINT_SCHEMA = objectSchema({ text: STRING, translation: STRING });
 
-/** JSON Schema sent to OmniRoute via OpenAI-compatible `response_format: json_schema`. `reply` comes first so it can stream. */
 export const COACH_REPLY_SCHEMA = objectSchema({
   reply: { type: "string", description: "Your in-character reply in English." },
   corrections: {
@@ -154,7 +153,6 @@ export const SUMMARY_SCHEMA = objectSchema({
   }),
 });
 
-/** Prompt for the image generator: a realistic, describable scene without text. */
 export function buildImagePrompt(topic: string): string {
   return `A realistic, detailed photograph of: ${topic}. A natural everyday scene with clearly visible people, objects and actions that are easy to describe. No text, captions, logos or watermarks.`;
 }

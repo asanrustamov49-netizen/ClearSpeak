@@ -1,30 +1,21 @@
 import { normalizeForMatch } from "./validation.ts";
 
 export interface PhraseComparison {
-  /** 0..1 share of target words matched in order (word-level edit distance). */
   score: number;
   verdict: "match" | "close" | "different";
-  /** Target words that were not recognised. */
   missing: string[];
-  /** Recognised words that are not in the target. */
   extra: string[];
 }
 
 function words(text: string): string[] {
-  // Apostrophes and hyphens are dropped so "don't"/"dont" and "well-known"/"well known" compare equal.
   return normalizeForMatch(text).replace(/['-]/g, " ").split(" ").filter(Boolean);
 }
 
-/**
- * Compares speech-recognition text with the target phrase on the word level.
- * This compares TEXT only — it says nothing about phonetics.
- */
 export function comparePhrase(target: string, recognized: string): PhraseComparison {
   const a = words(target);
   const b = words(recognized);
   if (a.length === 0) return { score: 0, verdict: "different", missing: [], extra: b };
 
-  // Levenshtein over words.
   const dp: number[][] = Array.from({ length: a.length + 1 }, (_, i) =>
     Array.from({ length: b.length + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0)),
   );

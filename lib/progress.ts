@@ -7,7 +7,6 @@ const MAX_WORDS = 2000;
 const MAX_DAYS = 400;
 const MAX_SESSIONS = 50;
 const MAX_REVIEWS_PER_WORD = 30;
-/** Days until the next review after N successful reviews. */
 const REVIEW_INTERVALS = [1, 2, 4, 7, 15, 30, 60];
 
 export interface SavedWord {
@@ -15,13 +14,10 @@ export interface SavedWord {
   word: string;
   translation: string;
   note: string;
-  /** Sentence the word was met in, if known. */
   context: string;
-  /** ISO timestamp. */
   addedAt: string;
   source: "lesson" | "tap" | "summary";
   topic: TopicId | null;
-  /** ISO timestamps of reviews marked as done. */
   reviews: string[];
 }
 
@@ -40,7 +36,6 @@ export interface ProgressData {
   speechRate: number;
   autoSpeak: boolean;
   words: SavedWord[];
-  /** Local calendar days (YYYY-MM-DD) with at least one answered learner message. */
   practiceDays: string[];
   sessions: SessionRecord[];
 }
@@ -54,7 +49,6 @@ export function clampRate(rate: number): number {
   return Math.round(Math.min(MAX_SPEECH_RATE, Math.max(MIN_SPEECH_RATE, rate)) * 100) / 100;
 }
 
-/** Local calendar date as YYYY-MM-DD (not UTC). */
 export function localDateKey(date: Date): string {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -64,14 +58,9 @@ export function localDateKey(date: Date): string {
 
 function shiftDay(key: string, days: number): string {
   const [y, m, d] = key.split("-").map(Number);
-  // Noon avoids DST edge cases when shifting by whole days.
   return localDateKey(new Date(y, m - 1, d + days, 12));
 }
 
-/**
- * Consecutive practice days ending today, or ending yesterday if there is no practice yet today
- * (the streak is still alive until the day is over). A missed full day resets it to 0.
- */
 export function computeStreak(practiceDays: readonly string[], today: Date): number {
   const days = new Set(practiceDays);
   const todayKey = localDateKey(today);
@@ -105,7 +94,6 @@ export interface NewWordInput {
   topic?: TopicId | null;
 }
 
-/** Adds a word unless it is already saved (case/space-insensitive). */
 export function addWord(data: ProgressData, input: NewWordInput, now: Date, id: string): { data: ProgressData; added: boolean } {
   const word = input.word.trim().slice(0, MAX_WORD_CHARS);
   const translation = input.translation.trim();
@@ -137,7 +125,6 @@ export function markReviewed(data: ProgressData, id: string, now: Date): Progres
   };
 }
 
-/** Words from earlier days whose next review date has come. */
 export function dueWords(data: ProgressData, now: Date): SavedWord[] {
   const todayKey = localDateKey(now);
   return data.words.filter((word) => {
@@ -168,7 +155,6 @@ function str(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
 
-/** Defensive parse of stored data: anything malformed is dropped, never trusted. */
 export function parseProgress(raw: unknown): ProgressData {
   const base = emptyProgress();
   if (typeof raw !== "object" || raw === null) return base;

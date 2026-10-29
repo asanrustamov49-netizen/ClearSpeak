@@ -1,10 +1,3 @@
-/**
- * Reads the value of the FIRST top-level string field of a JSON object that is still being streamed,
- * e.g. `{"reply":"Hello, wel` → "Hello, wel". Used only for the provisional on-screen text while
- * a structured reply streams in; the final object is always parsed with JSON.parse and validated.
- *
- * Returns null until the field's opening quote has arrived, or if the object does not start with it.
- */
 export function readStreamingStringField(partial: string, field: string): string | null {
   let i = 0;
   const skipSpace = () => {
@@ -34,7 +27,6 @@ export function readStreamingStringField(partial: string, field: string): string
       i += 1;
       continue;
     }
-    // Escape sequence: stop if it is not complete yet.
     const next = partial[i + 1];
     if (next === undefined) return out;
     if (next === "u") {
