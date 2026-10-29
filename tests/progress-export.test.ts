@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-
 import { wordsToAnki, wordsToCsv } from "../lib/export.ts";
 import { comparePhrase } from "../lib/phraseMatch.ts";
 import {
@@ -71,7 +70,6 @@ describe("dictionary", () => {
     );
     data = markReviewed(data, "w1", day(2026, 10, 15));
     assert.deepEqual(dueWords(data, day(2026, 10, 15)), []);
-    // After one review the next interval is 2 days.
     assert.deepEqual(
       dueWords(data, day(2026, 10, 16)).map((w) => w.id),
       ["w2"],

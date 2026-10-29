@@ -1,4 +1,3 @@
-// Minimal typings for the Web Speech API recognition interface.
 // TypeScript's lib.dom does not ship them; shape follows https://webaudio.github.io/web-speech-api/
 
 type SpeechRecognitionErrorCode =
