@@ -4,13 +4,8 @@ import { detectImageMime } from "@/lib/imageMime";
 import { describeImage } from "@/lib/omniroute";
 import { isRecord, parseImageTopic } from "@/lib/validation";
 
-/** base64 inflates by 4/3; plus a little room for the JSON wrapper. */
 const MAX_BODY_BYTES = Math.ceil((MAX_IMAGE_BYTES * 4) / 3) + 4096;
 
-/**
- * Called once when a conversation about an image starts: a vision model turns the image into a text
- * description, so later chat turns never re-send the image.
- */
 export async function POST(request: Request): Promise<Response> {
   const body = await readJsonBody(request, MAX_BODY_BYTES);
   if (!body.ok) return body.response;

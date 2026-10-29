@@ -1,17 +1,13 @@
 import { connection } from "next/server";
-
 import { errorResponse, handleRouteError, jsonResponse, readJsonBody } from "@/lib/http";
 import { generateImage, getImageStatus } from "@/lib/omniroute";
 import { isRecord, parseImageTopic } from "@/lib/validation";
 
-/** Which image features are configured. Never exposes model names or keys. */
 export async function GET(): Promise<Response> {
-  // Read env at request time, not at build time.
   await connection();
   return jsonResponse(getImageStatus());
 }
 
-/** Generates an image and returns the validated image bytes with the detected MIME type. */
 export async function POST(request: Request): Promise<Response> {
   const body = await readJsonBody(request);
   if (!body.ok) return body.response;

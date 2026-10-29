@@ -3,14 +3,8 @@ import { streamCoachReply } from "@/lib/omniroute";
 import type { ChatStreamEvent } from "@/lib/types";
 import { parseChatRequest } from "@/lib/validation";
 
-/** Minimum gap between provisional text updates sent to the browser. */
 const DELTA_INTERVAL_MS = 80;
 
-/**
- * Streams the reply as NDJSON: `delta` events with the provisional reply text, then one `final`
- * event with the validated structured reply, or an `error` event. Validation errors before the
- * stream starts are regular JSON error responses.
- */
 export async function POST(request: Request): Promise<Response> {
   const body = await readJsonBody(request);
   if (!body.ok) return body.response;
@@ -25,7 +19,6 @@ export async function POST(request: Request): Promise<Response> {
         try {
           controller.enqueue(encoder.encode(`${JSON.stringify(event)}\n`));
         } catch {
-          // The client disconnected; nothing to do.
         }
       };
 
@@ -70,7 +63,6 @@ export async function POST(request: Request): Promise<Response> {
         try {
           controller.close();
         } catch {
-          // Already closed by a disconnect.
         }
       }
     },
