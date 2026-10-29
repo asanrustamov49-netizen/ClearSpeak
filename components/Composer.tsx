@@ -1,7 +1,5 @@
 "use client";
-
 import { useCallback, useId, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
-
 import { HintsBar } from "./HintsBar";
 import { MicIcon, SendIcon, StopIcon } from "./icons";
 import styles from "./Composer.module.css";
@@ -21,12 +19,9 @@ export interface HintsSource {
 }
 
 interface Props {
-  /** Input is locked (no opening line yet, or the opening failed). */
   disabled: boolean;
-  /** A request is in flight; typing is allowed, sending is not. */
   busy: boolean;
   onSend: (text: string) => boolean;
-  /** Present when the last message is the AI's and the learner may need help answering. */
   hints: HintsSource | null;
   voice: VoiceMode;
   playback: Playback | null;
@@ -51,7 +46,6 @@ export function Composer({ disabled, busy, onSend, hints, voice, playback, onSto
   }, []);
 
   const dictation = useSpeechRecognition({ lang: "en-US", onFinalTranscript: appendTranscript });
-
   const trimmed = draft.trim();
   const tooLong = draft.length > MAX_USER_MESSAGE_CHARS;
   const canSend = !disabled && !busy && trimmed.length > 0 && !tooLong && !dictation.listening;
@@ -82,7 +76,6 @@ export function Composer({ disabled, busy, onSend, hints, voice, playback, onSto
   };
 
   const micUnavailable = dictation.support === "unsupported" || dictation.support === "insecure";
-
   const toolbar = (
     <div className={styles.toolbar}>
       {hints && !voice.enabled && (

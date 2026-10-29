@@ -1,16 +1,12 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
-
 import styles from "./HintsBar.module.css";
 import { RefreshIcon } from "./icons";
 import { ChatApiError, postHints } from "@/lib/api";
 import type { ChatTurn, LevelId, ReplyHint, TopicId } from "@/lib/types";
 
 interface Props {
-  /** Id of the AI message the hints answer; hints reset when it changes. */
   messageId: string;
-  /** Hints that came with the AI reply (no extra request needed). */
   preset: ReplyHint[];
   level: LevelId;
   topic: TopicId;
@@ -21,7 +17,6 @@ interface Props {
 type HintState = { status: "closed" } | { status: "loading" } | { status: "ready"; hints: ReplyHint[] } | { status: "error"; message: string };
 
 export function HintsBar(props: Props) {
-  // Remount per AI message so stale hints are never shown for a new question.
   return <HintsBarInner key={props.messageId} {...props} />;
 }
 
@@ -36,7 +31,6 @@ function HintsBarInner({ preset, level, topic, history, onPick }: Props) {
       setState({ status: "ready", hints: preset });
       return;
     }
-    // Only when the reply carried no usable hints: ask the server separately.
     controllerRef.current?.abort();
     const controller = new AbortController();
     controllerRef.current = controller;

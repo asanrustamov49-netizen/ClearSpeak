@@ -1,7 +1,5 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
-
 import styles from "./DictionaryDialog.module.css";
 import { CheckIcon, CloseIcon, DownloadIcon, SpeakerIcon } from "./icons";
 import type { PlaybackTools } from "./wordTools";
@@ -47,7 +45,6 @@ export function DictionaryDialog({ open, mode, onModeChange, onClose, progress, 
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [exportMessage, setExportMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
-  // Review session: a fixed queue taken when review starts, so marking words does not reshuffle it.
   const [queue, setQueue] = useState<string[] | null>(null);
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);

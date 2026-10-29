@@ -1,7 +1,5 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
-
 import styles from "./AssistantMessage.module.css";
 import { BookmarkIcon, CloseIcon, RefreshIcon, SpeakerIcon, StopIcon } from "./icons";
 import { WordChips } from "./WordChips";
@@ -13,7 +11,6 @@ import { sentenceAround, tokenizeMessage } from "@/lib/tokenize";
 import type { TopicId } from "@/lib/types";
 import { normalizeWord } from "@/lib/vocabulary";
 
-/** Translations fetched in this tab, so tapping the same word again costs no request. */
 const translationCache = new Map<string, { translation: string; note: string }>();
 
 interface Props {
@@ -96,7 +93,6 @@ export function AssistantMessage({ message, topic, words, audio }: Props) {
         <p className="visually-hidden" lang="en">
           SpeakUp AI: {message.content}
         </p>
-        {/* Visual copy with tappable words; screen readers get the plain text above. */}
         <p className={styles.text} lang="en" aria-hidden="true">
           {tokens.map((token, index) =>
             token.kind === "text" ? (
