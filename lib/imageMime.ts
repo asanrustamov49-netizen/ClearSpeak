@@ -1,8 +1,6 @@
 export type ImageMime = "image/png" | "image/jpeg" | "image/webp" | "image/gif";
-
 export const IMAGE_MIMES: readonly ImageMime[] = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 
-/** Detects the image type from magic bytes — never trusts a declared Content-Type alone. */
 export function detectImageMime(bytes: Uint8Array): ImageMime | null {
   const b = bytes;
   if (b.length >= 8 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47 && b[4] === 0x0d && b[5] === 0x0a) {

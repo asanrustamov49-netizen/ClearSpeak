@@ -1,7 +1,6 @@
 import { MAX_REQUEST_BYTES } from "./constants";
 import type { ApiErrorBody, ApiErrorCode } from "./types";
 
-/** Error with a safe, user-facing message and the HTTP status to return. */
 export class UpstreamError extends Error {
   readonly code: ApiErrorCode;
   readonly status: number;
@@ -19,7 +18,6 @@ export function errorResponse(status: number, code: ApiErrorCode, message: strin
   return Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
 }
 
-/** Reads and JSON-parses a request body with a size limit. Returns a ready error Response on failure. */
 export async function readJsonBody(request: Request, maxBytes = MAX_REQUEST_BYTES): Promise<{ ok: true; value: unknown } | { ok: false; response: Response }> {
   const declaredLength = Number(request.headers.get("content-length") ?? "0");
   if (declaredLength > maxBytes) {
@@ -43,11 +41,9 @@ export async function readJsonBody(request: Request, maxBytes = MAX_REQUEST_BYTE
   }
 }
 
-/** Maps thrown errors to safe JSON responses. Never echoes upstream bodies or secrets. */
 export function handleRouteError(error: unknown, scope: string): Response {
   if (error instanceof UpstreamError) return errorResponse(error.status, error.code, error.message);
   if (error instanceof DOMException && error.name === "AbortError") {
-    // The client went away; nobody will read this response.
     return errorResponse(499, "network", "Запрос отменён.");
   }
   console.error(`[${scope}] unexpected error`, error instanceof Error ? error.name : typeof error);
