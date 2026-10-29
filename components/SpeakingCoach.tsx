@@ -1,7 +1,5 @@
 "use client";
-
 import { useCallback, useEffect, useRef, useState } from "react";
-
 import { Composer, type HintsSource } from "./Composer";
 import { CorrectionsPanel } from "./CorrectionsPanel";
 import { DictionaryDialog, type DictionaryMode } from "./DictionaryDialog";
@@ -31,7 +29,6 @@ export function SpeakingCoach() {
   const speech = useSpeech(rate);
   const { play, stop: stopSpeaking } = speech;
   const audioAvailable = speech.provider === "cartesia" || speech.provider === "omniroute" || speech.browserSupported === true;
-
   const [dictionary, setDictionary] = useState<{ open: boolean; mode: DictionaryMode }>({ open: false, mode: "list" });
   const voiceRef = useRef<VoiceMode | null>(null);
   const [studioOpen, setStudioOpen] = useState(false);
@@ -51,7 +48,6 @@ export function SpeakingCoach() {
     (id: string, text: string) => {
       const voice = voiceRef.current;
       if (voice?.enabled) {
-        // Voice mode: always read the reply, then re-open the mic once playback is over.
         if (!audioAvailable) {
           voice.resumeAfterReply();
           return;
@@ -75,7 +71,6 @@ export function SpeakingCoach() {
         level: snapshot.level,
         topic: snapshot.topic,
         turns: snapshot.messages.filter((message) => message.role === "user" && message.corrections).length,
-        // Same count as the summary screen: session words plus words the summary found in the dialogue.
         newWords: new Set([...snapshot.vocabulary, ...summary.newWords].map((item) => normalizeWord(item.word))).size,
         goal: summary.goal.status,
       });
@@ -127,7 +122,6 @@ export function SpeakingCoach() {
         }
       : null;
 
-  // The session owns the image object URL; release it when the session ends.
   const sessionImageUrl = state.image?.url ?? null;
   useEffect(() => {
     if (!sessionImageUrl) return;

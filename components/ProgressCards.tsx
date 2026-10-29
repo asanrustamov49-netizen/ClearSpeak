@@ -1,5 +1,4 @@
 "use client";
-
 import styles from "./ProgressCards.module.css";
 import type { ProgressState } from "@/hooks/useProgress";
 import { computeStreak, dueWords } from "@/lib/progress";

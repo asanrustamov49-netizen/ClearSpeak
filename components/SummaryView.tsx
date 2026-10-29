@@ -1,5 +1,4 @@
 "use client";
-
 import { AlertIcon, ArrowRightIcon, BookmarkIcon, RefreshIcon } from "./icons";
 import styles from "./SummaryView.module.css";
 import type { WordTools } from "./wordTools";
@@ -27,8 +26,6 @@ const GOAL_TEXT: Record<Exclude<GoalStatus, "not_applicable">, { title: string; 
 
 export function SummaryView({ summary, topic, turns, sessionWords, words, onRetry, onBack, onNewSession }: Props) {
   const scenario = getScenario(topic);
-
-  // Session words (with notes) first, then words the summary found in the transcript.
   const allWords: Array<{ word: string; translation: string; note: string }> = [...sessionWords];
   const seen = new Set(sessionWords.map((item) => normalizeWord(item.word)));
   for (const item of summary.data?.newWords ?? []) {

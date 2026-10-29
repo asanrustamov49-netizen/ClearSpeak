@@ -1,5 +1,4 @@
 "use client";
-
 import { ArrowRightIcon, CheckIcon, ImageIcon } from "./icons";
 import { ProgressCards } from "./ProgressCards";
 import styles from "./SetupPanel.module.css";

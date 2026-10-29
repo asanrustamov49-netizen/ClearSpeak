@@ -1,7 +1,5 @@
 "use client";
-
 import { useState } from "react";
-
 import { MicIcon, SpeakerIcon, StopIcon } from "./icons";
 import styles from "./PracticePhrase.module.css";
 import type { PlaybackTools } from "./wordTools";
@@ -20,7 +18,6 @@ const VERDICT_TEXT: Record<PhraseComparison["verdict"], string> = {
   different: "Распознано другое. Прослушайте фразу и попробуйте снова.",
 };
 
-/** "Repeat after me": compares speech-recognition TEXT with the corrected phrase (not phonetics). */
 export function PracticePhrase({ id, target, audio }: Props) {
   const [heard, setHeard] = useState<string | null>(null);
   const [result, setResult] = useState<PhraseComparison | null>(null);
